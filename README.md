@@ -201,6 +201,54 @@ See the next: [spark cluster mode overview](https://spark.apache.org/docs/latest
          * [YarnCoarseGrainedExecutorBackend](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/executor/YarnCoarseGrainedExecutorBackend.scala) - implementation of CoarseGrainedExecutorBackend for YARN resource manager
 
       * [LocalSchedulerBackend](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/scheduler/local/LocalSchedulerBackend.scala) used when running a local version of Spark, sits behind a TaskScheduler and handles launching tasks on a single Executor
+      
+      
+      
+## Apache Spark execution strategies
+
+**[Optimizer](https://github.com/apache/spark/blob/master/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/Optimizer.scala)** leverages advanced programming language features in a novel way to build an extensible query optimizer. 
+On top of this framework, it has libraries specific to relational query processing (e.g., expressions, logical query plans), and several sets of rules that handle different phases of query execution: analysis, logical optimization, physical planning, and code generation to compile parts of queries to Java bytecode
+
+**[Join selection](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L138)** 
+
+  Selects the proper physical plan for join based on join strategy hints. 
+  * [Matches a plan whose output should be small enough to be used in broadcast join](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L143)
+
+**[StatefulAggregationStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L401)** 
+
+   * Used to [plan](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L427) streaming aggregation queries that are computed incrementally as part of a [[StreamingQuery]]   
+
+**[StreamingDeduplicationStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L441)**
+
+  * Used to [plan](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L444) the streaming deduplicate operator
+
+**[StreamingGlobalLimitStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L455)**
+
+  * Used to [plan](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L480) the streaming global limit operator for streams in append mode
+
+**[StreamingJoinStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L487)**
+
+  * Used to [plan](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L494) streaming queries with Join logical operators
+  
+**[Aggregation](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L509)**
+
+  * Used to [plan](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L534) the aggregate operator for expressions based on the AggregateFunction2 interface  
+
+**[Window](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L571)**
+
+  * Used to [execute](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L573) window functions
+
+**[InMemoryScans](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L589)**
+  
+  * Used to [explain](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L591) strategy for in-mem tables
+  
+**[StreamingRelationStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L607)**
+
+  * Used to [explain](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L608) Dataset/DataFrame. Won't affect the execution
+  
+**[FlatMapGroupsWithStateStrategy](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L623)**
+  * Used to [convert](https://github.com/apache/spark/blob/master/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala#L629) logical operator to physical operator in streaming plans  
+  
 
 References:
 

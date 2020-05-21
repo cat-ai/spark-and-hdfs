@@ -17,7 +17,7 @@ Special thanks to [Jacek Laskowski](https://github.com/jaceklaskowski) and his o
 
 **Distributed data processing layer:**
 
-* [YARN](https://classic.yarnpkg.com/en/) - resource manager of cluster 
+* [YARN](https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html) - resource manager of cluster 
 * [MESOS](http://mesos.apache.org/) - resource manager of cluster
 
 **Execution engine layer:**
@@ -36,7 +36,7 @@ Special thanks to [Jacek Laskowski](https://github.com/jaceklaskowski) and his o
                                        Spark supports scalability and fault tolerance of MapReduce. 
                                        To achieve these goals, Spark introduces abstraction called resilient distributed datasets ([RDDs](https://spark.apache.org/docs/latest/rdd-programming-guide.html))
 
-* [TEZ](https://tez.apache.org/) - is an extensible framework for building high performance batch and interactive data processing applications, coordinated by [YARN](https://classic.yarnpkg.com/en/) in [Apache Hadoop](https://hadoop.apache.org/)
+* [TEZ](https://tez.apache.org/) - is an extensible framework for building high performance batch and interactive data processing applications, coordinated by [YARN](https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html) in [Apache Hadoop](https://hadoop.apache.org/)
 
 
 **Distributed data as RDB representation layer:**

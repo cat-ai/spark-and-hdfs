@@ -115,6 +115,57 @@ HDFS provides a reliable way to store huge data in a distributed environment as 
 If we have a file of size 800 MB, HDFS default size of each block is 128 MB (since Hadoop 2.x.x; 64 MB in Hadoop 1.x.x), and replication factor is equal to 3, so we'll have 21 replicated blocks distributed on Data Nodes
 
 
+## Hadoop data formats
+
+Data formats widely used in Hadoop that can be split across multiple disks. Hadoop allows for storage of data in text, binary, etc.
+
+
+* Row-oriented format
+
+  ```Values for each row are stored contiguously in the file```  
+  
+  * [Avro]() - 
+  
+
+* Column-oriented format
+  
+  ```Rows in a file are broken up into row splits and each split is stored in column-oriented approach: row value stored in in column```    
+ 
+ * [Parquet](https://parquet.apache.org/) - is a columnar storage format available to any project in the Hadoop ecosystem
+   *![Screenshot](https://raw.github.com/apache/parquet-format/master/doc/images/FileLayout.gif)
+     * Header
+       * Magic numbers - 4 bytes "PAR1" (beginning)
+     * Row Group consists of a column chunk for each column in the dataset
+       * Column - a chunk of the data for a particular column
+         * Page contains values for a particular column only
+         * Column metadata
+     * Footer
+       * File metadata contains the locations of all the column metadata start locations
+       * Footer length
+       * Magic numbers - 4 bytes "PAR1" (end)
+ 
+ * [ORC](https://orc.apache.org/) - columnar file format designed for Hadoop workloads. Improves performance when Hive is reading, writing, and processing data. [ACID](https://en.wikipedia.org/wiki/ACID) transactions are only possible when using ORC as the file format
+   *![Screenshot](https://cwiki.apache.org/confluence/download/attachments/31818911/OrcFileLayout.png?version=1&modificationDate=1366430304000&api=v2)
+     * Magic number "ORC"
+     * Stripes - distributed unit
+       * Index data includes min and max values for each column and the row positions within each column
+       * Row data is used in table scans
+       * Stripe footer contains a directory of stream locations
+     * File footer
+     * postscript
+       
+
+* For structured text data
+  *[Avro]()
+
+
+- when you need to process single N columns of single row at the same time, then use row-oriented file format; when you need to process small number of columns, then use column-oriented file format.
+- column-oriented formats are not suited to streaming writes
+- parquet compression and encoding algorithms are time and space consuming
+- running a query on Parquet faster than on ORC
+- ORC takes much less time on SELECT
+
+
 ## Apache Spark
 
 ![Screenshot](https://github.com/cat-ai/spark-and-hdfs/blob/master/pic/Spark-HDFS.png)

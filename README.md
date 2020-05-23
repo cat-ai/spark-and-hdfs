@@ -124,9 +124,17 @@ Data formats widely used in Hadoop that can be split across multiple disks. Hado
 
   ```Values for each row are stored contiguously in the file```  
   
-  * [Avro]() - 
-  
-
+  * [Avro](https://avro.apache.org/) - row-oriented (stores data in rows) storage format used as a serialization platform
+    * Header
+      * 
+      * File metadata
+      * Sync marker
+    * Block 
+      * count
+      * size  
+      * serialized objects
+      * Sync marker
+      
 * Column-oriented format
   
   ```Rows in a file are broken up into row splits and each split is stored in column-oriented approach: row value stored in in column```    
@@ -153,17 +161,15 @@ Data formats widely used in Hadoop that can be split across multiple disks. Hado
        * Stripe footer contains a directory of stream locations
      * File footer
      * postscript
-       
-
-* For structured text data
-  *[Avro]()
-
-
-- when you need to process single N columns of single row at the same time, then use row-oriented file format; when you need to process small number of columns, then use column-oriented file format.
-- column-oriented formats are not suited to streaming writes
-- parquet compression and encoding algorithms are time and space consuming
-- running a query on Parquet faster than on ORC
-- ORC takes much less time on SELECT
+      
+* Best practice
+  - when you need to process single N columns of single row at the same time, then use row-oriented file format; when you need to process small number of columns, then use column-oriented file format.
+  - column-oriented formats are not suited to streaming writes
+  - parquet compression and encoding algorithms are time and space consuming
+  - running a query on Parquet faster than on ORC
+  - ORC takes much less time on SELECT
+  - for structured text data use AVRO as container
+  - ORC is best for retrieving and compressing data
 
 
 ## Apache Spark

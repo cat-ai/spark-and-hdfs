@@ -62,6 +62,44 @@ Special thanks to [Jacek Laskowski](https://github.com/jaceklaskowski) and his o
 * [Hue](https://gethue.com/) - SQL Assistant for Databases & Data Warehouses
 * [Cloudera Manager](https://www.cloudera.com/products/product-components/cloudera-manager.html) - The fastest way to get up and running with Hadoop and Cloudera Enterprise
 
+
+## [CAP theorem](https://en.wikipedia.org/wiki/CAP_theorem)
+
+```Disclaimer: CAP THEOREM CAN NOT COMPLETELY APPLIED ON HDFS (HDFS does not provide full Availability - when N data nodes with the same HSDF block are unable to communicate with Name Node)```
+
+Is a fundamental theorem in distributed systems. CAP Theorem is a concept that a distributed database system can only have 2 of the 3: 
+ 
+ * Consistency
+   
+   ```Any read operation that begins after a write operation completes must return that value, or the result of a later write operation```
+   
+   A writer expects to get latest value back from any node it reads from. 
+   
+   Example: there are 3 nodes (N1, N2, N3) in a distributed system, 1 writer (W1) and 2 readers (R1, R2). 
+   
+   Scenario: a writer (W1) writes a file (F1) to N1, then the file (F1) will be replicated to N2 and N3, so if R1/R2 wants to read the file (F1) from N2/N3 he'll get the latest file.
+   
+ * Availability 
+   
+   ```Every request received by a non-failing node in the system must result in a response```
+   
+   A reader/writer MUST get response if some node of distributed system is unavailable
+   
+   Example: there are 3 nodes (N1, N2, N3) in a distributed system (DS1), 1 reader (R1). 
+   
+   Scenario: a reader (R1) reads a value, if a system (DS1) has not crushed, but some node (N1/N2/N3) crashed, the system must respond to the reader(R1), but the response is not guaranteed to have the latest value (“eventually consistent”)
+ 
+ * Partition Tolerance
+   
+   ```The network will be allowed to lose arbitrarily many messages sent from one node to another```
+   
+   A system continues to operate even if a message is lost or part of the system fails
+   
+   Example: there are 2 nodes (N1, N2) in a distributed system (DS1), 1 reader (R1)
+   
+   Scenario: A reader (R1) tries to read a value in a distributed system (DS1), and the time of reading the value, N2 node has failed, so now the system (DS1) cannot determine that node (N1) stores latest value, and it decides to response an ERROR to reader (R1). 
+   
+
 ## Hadoop Distributed File System (HDFS)
 
 ![Screenshot](https://github.com/cat-ai/spark-and-hdfs/blob/master/pic/HDFS-Arch.png)
@@ -139,28 +177,28 @@ Data formats widely used in Hadoop that can be split across multiple disks. Hado
   
   ```Rows in a file are broken up into row splits and each split is stored in column-oriented approach: row value stored in in column```    
  
- * [Parquet](https://parquet.apache.org/) - is a columnar storage format available to any project in the Hadoop ecosystem
-   *![Screenshot](https://raw.github.com/apache/parquet-format/master/doc/images/FileLayout.gif)
-     * Header
-       * Magic numbers - 4 bytes "PAR1" (beginning)
-     * Row Group consists of a column chunk for each column in the dataset
-       * Column - a chunk of the data for a particular column
-         * Page contains values for a particular column only
-         * Column metadata
-     * Footer
-       * File metadata contains the locations of all the column metadata start locations
-       * Footer length
-       * Magic numbers - 4 bytes "PAR1" (end)
+  * [Parquet](https://parquet.apache.org/) - is a columnar storage format available to any project in the Hadoop ecosystem
+    *![Screenshot](https://raw.github.com/apache/parquet-format/master/doc/images/FileLayout.gif)
+      * Header
+        * Magic numbers - 4 bytes "PAR1" (beginning)
+      * Row Group consists of a column chunk for each column in the dataset
+        * Column - a chunk of the data for a particular column
+          * Page contains values for a particular column only
+          * Column metadata
+      * Footer
+        * File metadata contains the locations of all the column metadata start locations
+        * Footer length
+        * Magic numbers - 4 bytes "PAR1" (end)
  
- * [ORC](https://orc.apache.org/) - columnar file format designed for Hadoop workloads. Improves performance when Hive is reading, writing, and processing data. [ACID](https://en.wikipedia.org/wiki/ACID) transactions are only possible when using ORC as the file format
-   *![Screenshot](https://cwiki.apache.org/confluence/download/attachments/31818911/OrcFileLayout.png?version=1&modificationDate=1366430304000&api=v2)
-     * Magic number "ORC"
-     * Stripes - distributed unit
-       * Index data includes min and max values for each column and the row positions within each column
-       * Row data is used in table scans
-       * Stripe footer contains a directory of stream locations
-     * File footer
-     * postscript
+  * [ORC](https://orc.apache.org/) - columnar file format designed for Hadoop workloads. Improves performance when Hive is reading, writing, and processing data. [ACID](https://en.wikipedia.org/wiki/ACID) transactions are only possible when using ORC as the file format
+    *![Screenshot](https://cwiki.apache.org/confluence/download/attachments/31818911/OrcFileLayout.png?version=1&modificationDate=1366430304000&api=v2)
+      * Magic number "ORC"
+      * Stripes - distributed unit
+        * Index data includes min and max values for each column and the row positions within each column
+        * Row data is used in table scans
+        * Stripe footer contains a directory of stream locations
+      * File footer
+      * Postscript
       
 * Best practice
   - when you need to process single N columns of single row at the same time, then use row-oriented file format; when you need to process small number of columns, then use column-oriented file format.
@@ -326,3 +364,7 @@ References:
 * https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf
 
 * https://www.researchgate.net/figure/Overall-system-architecture-of-the-proposed-coordinated-cache-manager-in-Spark-Our_fig2_319327363
+
+* https://users.ece.cmu.edu/~adrian/731-sp04/readings/GL-cap.pdf
+
+* https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf

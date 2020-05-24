@@ -97,7 +97,7 @@ Is a fundamental theorem in distributed systems. CAP Theorem is a concept that a
    
    Example: there are 2 nodes (N1, N2) in a distributed system (DS1), 1 reader (R1)
    
-   Scenario: A reader (R1) tries to read a value in a distributed system (DS1), and the time of reading the value, N2 node has failed, so now the system (DS1) cannot determine that node (N1) stores latest value, and it decides to response an ERROR to reader (R1). 
+   Scenario: a reader (R1) tries to read a value in a distributed system (DS1), at the time of reading the value, N2 node has failed, so now the system (DS1) cannot determine that node (N1) stores latest value, and it decides to response an ERROR to reader (R1). 
    
 
 ## Hadoop Distributed File System (HDFS)
